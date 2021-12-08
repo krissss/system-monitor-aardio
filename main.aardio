@@ -1,157 +1,61 @@
 //RUNAS/#/cpuTemp
-
 import win.ui;
-import win.ui.atom;
-import win.util.tray;
 import win.ui.menu;
 /*DSG{{*/
-winform = win.form(text="run_cat";right=510;bottom=413)
-winform.add(
-button={cls="button";text="Button";left=108;top=109;right=218;bottom=142;z=1};
-static={cls="static";text="Static";left=245;top=87;right=439;bottom=128;notify=1;transparent=1;z=2};
-static2={cls="static";text="Static";left=238;top=162;right=390;bottom=192;transparent=1;z=3};
-static3={cls="static";text="Static";left=243;top=222;right=395;bottom=251;transparent=1;z=4}
-)
+winform = win.form(text="System Monitor Setting";right=510;bottom=413;bgcolor=16777215;max=false)
+winform.add()
 /*}}*/
 
-/*为窗口设置原子值可以避免一个程序重复运行多个实例*/
-var atom,hwnd = winform.atom("3EA4B1F6-0319-4C97-B4BD-44BC74280727");
-if(!atom){
-	win.quitMessage();	return;
+import config;
+import tools;
+
+if (config.__single && !tools.singleInstance(winform)) {
+	return; 
 }
 
-var createTaskMenu = function(){
-	if (winform.popmenu) {
-		winform.msgbox('aa')
-		return; 
-	}
-	
-	winform.wndproc = {
-		[0xACCF/*_WM_TRAYMESSAGE*/ ] = function(hwnd,message,wParam,lParam){
-			if( lParam = 0x205/*_WM_RBUTTONUP*/ ){ 
-	    		var pt = ::POINT();
-				::User32.GetCursorPos(pt); 
-	    		
-	    		//弹出托盘菜单以前,一定要前置主窗口中,不然不点击菜单不会消失
-	    		win.setForeground(winform.hwnd)
-	    		winform.popmenu.popup(pt.x,pt.y,true )
-	    	}	
+// 创建菜单
+var menuTable = {
+	{
+		"信息";
+		function(id){
+			winform.show(true)
 		}
+	};
+	{
+		"设置";
+		function(id){
+			winform.show(true)
+		}
+	};
+	{ "退出"; function() { winform.onClose=null; winform.close() } };
+}
+// 创建托盘菜单
+winform.popmenu = tools.createPopMenu(winform, menuTable, 'popmenu')
+// 创建主菜单
+winform.mainmenu = tools.createMainMenu(winform, menuTable)
+// 创建托盘
+winform.tray = tools.createTray(winform, "\res\icons\mario-ico\0.ico", "Running")
+
+// 托盘更新的定时器
+var trayIconIndex = 0
+var trayUpdateTimer = tools.createTimeInterval(winform, function(){
+	winform.tray.icon = "\res\icons\mario-ico\"+trayIconIndex+".ico"
+	trayIconIndex += 1
+	if (trayIconIndex > 2) {
+		trayIconIndex = 0
 	}
-	
-	winform.popmenu = win.ui.popmenu(winform);//创建弹出菜单
-	winform.popmenu.addTable({
-		{
-			"打开";
-			function(id){
-				winform.msgbox(id)
-				winform.show(true)
-			}
-		};
-		{ /*分隔线*/ };
-		{
-			"选中";
-			function(id){
-				winform.popmenu.check(3, !winform.popmenu.checked(3))
-			}
-		};
-	 	{
-	 		"子菜单";
-	 		{
-	 			{
-	 				"子菜单2";
-	 				function(id){
-	 					winform.popmenu.check(4, !winform.popmenu.checked(4))
-	 					winform.popmenu.subMenu(4).check(1, !winform.popmenu.subMenu(4).checked(1))
-	 				}
-	 			}
-	 		}
-	 	};
-	 	{ "退出"; function() { winform.close() } };
-	})
-}
-
-var createTaskIcon = function(){
-	if (winform.tray) {
-		return; 
-	}
-	
-	// 系统托盘
-	winform.tray = win.util.tray(winform)
-	winform.tray.tip = "Running"
-	winform.tray.icon = "\res\icons\mario-ico\0.ico"
-	// 托盘菜单
-	createTaskMenu()
-}
-
-createTaskIcon()
-
-winform.onMinimize = function(lParam){
-	createTaskIcon()
-	winform.show(false); //隐藏窗口
-	return true;//阻击默认消息传递,取消最小化过程
-}
-
-import console
-
-import dotNet;
-var clr = dotNet.clr(); 
-var app = clr.createAppDomain();
-var dll = app.loadFile("\res\OpenHardwareMonitorLib.dll");
-var computer = dll.createInstance("OpenHardwareMonitor.Hardware.Computer");
-computer.CPUEnabled = true;
-computer.Open();
-/*
-for(k,v in computer.Hardware[1].Sensors){
-	console.dump(v.SensorType, v.Name, v.Value)
-}
-*/
-
-import win.timer
-var timer = win.timer( winform );
-timer.setInterval(1000)
-iconIndex = 0
-
-var timerIcon = win.timer( winform );
-timerIcon.setInterval(100)
-timerIcon.onTimer = function(){
-	winform.tray.icon = "\res\icons\mario-ico\"+iconIndex+".ico"
-	iconIndex += 1
-	if (iconIndex > 2) {
-		iconIndex = 0
-	}
-}
-timerIcon.enable()
-
-timer.onTimer = function(hwnd,msg,id,tick){
-	winform.static.text = time.tick();
-	
-	// 查找 cpu 信息
-	cpuHardwareIndex = table.find(computer.Hardware, function(v){
-		return v.HardwareType == 2;
-	})
-	// 更新
-	computer.Hardware[cpuHardwareIndex].Update()
-	// 获取 cpu 负载指标
-	cpuLoadSensors = table.filter(computer.Hardware[cpuHardwareIndex].Sensors,function(v,index){
-		return v.SensorType == 3; 
-	})
-	cpuTotalIndex = table.find(cpuLoadSensors, function(v){
-		return v.Name == 'CPU Total';
-	})
-	cpuPercent = math.round(cpuLoadSensors[cpuTotalIndex].Value, 2)
-	winform.static2.text = cpuPercent
-	
+}, 100, true)
+// 系统信息监控的定时器
+import openHardwareMonitor;
+var systemMonitorTimer = tools.createTimeInterval(winform, function(){
+	var cpuPercent = openHardwareMonitor.getAndUpdateCpuUsage()
 	// 修改频率
 	winform.tray.tip = 'CPU: ' + cpuPercent + '%'
-	timerIcon.setInterval(100 - cpuPercent)
-}
-timer.enable()
+	trayUpdateTimer.setInterval(100 - cpuPercent)
+}, 1000, true)
 
-/*
-var menu = win.ui.menu(winform);//创建主菜单
-menu.add('file',winform.popmenu)
-*/
-
-winform.show(false);
+// 注册窗口事件监听
+tools.winformEventHandle(winform)
+// 窗口启动
+winform.show(true);
 return win.loopMessage();
