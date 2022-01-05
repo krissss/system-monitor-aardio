@@ -59,8 +59,6 @@ var trayIconIndex = 1
 var trayIconMax = 3
 var trayIconName = "\res\icons\mario"
 var trayUpdateTimer = tools.createTimeInterval(winform, function(){
-	import console
-	console.dump(trayIconName+"\icon ("+trayIconIndex+").ico")
 	winform.tray.icon = trayIconName+"\icon ("+trayIconIndex+").ico"
 	trayIconIndex += 1
 	if (trayIconIndex > trayIconMax) {
