@@ -47,6 +47,7 @@ namespace tools{
 		
 		var atom,hwnd = winform.atom("36A270B2-C57B-481F-8A3D-DC1B49767F04"/*使用 GUID 生成器生成*/);
 		if(!atom){
+			win.showForeground(hwnd);
 			win.quitMessage();
 			return false;
 		}
@@ -99,12 +100,24 @@ namespace tools{
 		// 最小化时不关闭
 		winformEventRegister('onMinimize', function(){
             winform.show(false);
+            
+            import process;
+			process.emptyWorkingSet();
+            
             return true;
 		})
 		// 关闭时不关闭，到托盘，如果需要退出，先调用 winform.onClose=null
 		winformEventRegister('onClose', function(){
-            winform.show(false);
-            return true;
+			if(!_STUDIO_INVOKED){
+				winform.onMinimize();
+				return true;
+			}
+		})
+		// 销毁时删除托盘
+		winformEventRegister('onDestroy', function(){
+			if(winform.tray){
+				winform.tray.delete()
+			}
 		})
 		// 双击打开窗口
 		winformEventRegister(0xACCF/*_WM_TRAYMESSAGE*/, function(hwnd,message,wParam,lParam){

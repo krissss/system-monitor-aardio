@@ -2,8 +2,10 @@
 import win.ui;
 import win.ui.menu;
 /*DSG{{*/
-winform = win.form(text="System Monitor Setting";right=510;bottom=413;bgcolor=16777215;max=false)
-winform.add()
+winform = win.form(text="System Monitor Setting";right=600;bottom=500;bgcolor=16777215;max=false)
+winform.add(
+custom={cls="custom";text="自定义控件";left=0;top=0;right=600;bottom=500;ah=1;aw=1;z=1}
+)
 /*}}*/
 
 import config;
@@ -13,18 +15,34 @@ if (config.__single && !tools.singleInstance(winform)) {
 	return; 
 }
 
+// TODO
+// 1.Home页面（各项监控指标）
+// 2.设置页面（设置指标，设置图标）
+// 3.图标根据 icos 自动切换和配置
+
+winform.custom.loadForm("\dlg\home.aardio")
 // 创建菜单
+var pageHome = null
+var pageSetting = null
 var menuTable = {
 	{
 		"信息";
 		function(id){
-			winform.show(true)
+			winform.show()
+			if (!pageHome) {
+				pageHome = winform.custom.loadForm("\dlg\home.aardio")
+			}
+			pageHome.show()
 		}
 	};
 	{
 		"设置";
 		function(id){
-			winform.show(true)
+			winform.show()
+			if (!pageSetting) {
+				pageSetting = winform.custom.loadForm("\dlg\setting.aardio")
+			}
+			pageSetting.show()
 		}
 	};
 	{ "退出"; function() { winform.onClose=null; winform.close() } };
@@ -34,24 +52,33 @@ winform.popmenu = tools.createPopMenu(winform, menuTable, 'popmenu')
 // 创建主菜单
 winform.mainmenu = tools.createMainMenu(winform, menuTable)
 // 创建托盘
-winform.tray = tools.createTray(winform, "\res\icons\mario-ico\0.ico", "Running")
+winform.tray = tools.createTray(winform, "\res\icons\mario\icon (1).ico", "Running")
 
 // 托盘更新的定时器
-var trayIconIndex = 0
+var trayIconIndex = 1
+var trayIconMax = 3
+var trayIconName = 'mario'
 var trayUpdateTimer = tools.createTimeInterval(winform, function(){
-	winform.tray.icon = "\res\icons\mario-ico\"+trayIconIndex+".ico"
+	winform.tray.icon = "\res\icons\"+trayIconName+"\icon ("+trayIconIndex+").ico"
 	trayIconIndex += 1
-	if (trayIconIndex > 2) {
-		trayIconIndex = 0
+	if (trayIconIndex > trayIconMax) {
+		trayIconIndex = 1
 	}
 }, 100, true)
+subscribe("trayIconChange",function(name){
+	trayIconName = name
+	import iconHelper
+	trayIconMax = iconHelper.getCount(name)
+	trayIconIndex = 1
+})
 // 系统信息监控的定时器
 import openHardwareMonitor;
 var systemMonitorTimer = tools.createTimeInterval(winform, function(){
 	var cpuPercent = openHardwareMonitor.getAndUpdateCpuUsage()
 	// 修改频率
 	winform.tray.tip = 'CPU: ' + cpuPercent + '%'
-	trayUpdateTimer.setInterval(100 - cpuPercent)
+	var interval = (100 - cpuPercent) * 3 / trayIconMax
+	trayUpdateTimer.setInterval(interval > 0 ? interval : 1)
 }, 1000, true)
 
 // 注册窗口事件监听

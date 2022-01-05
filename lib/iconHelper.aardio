@@ -1,0 +1,36 @@
+﻿
+namespace iconHelper{
+	baseDir = "/res/icons"
+	// 可用的
+	getCanUseNames = function(){
+		var icons = {}
+		import fsys
+		fsys.enum(
+			baseDir,
+			"*.*",
+			function(dirname,filename,fullpath,findData){ 
+				if(!filename){ 
+           			..table.push(icons, dirname)
+				}
+			},
+			false
+		);
+		return icons;
+	}
+	// 获取icon数量
+	getCount = function(name){
+		var count = 0
+		fsys.enum( 
+			baseDir + '/' + name,
+			"*.ico",
+			function(dirname,filename,fullpath,findData){ 
+				if(filename){ 
+	           		count += 1
+				}
+			},
+			false
+		);
+		return count;
+	}
+	
+}
