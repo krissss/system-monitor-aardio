@@ -57,17 +57,19 @@ winform.tray = tools.createTray(winform, "\res\icons\mario\icon (1).ico", "Runni
 // 托盘更新的定时器
 var trayIconIndex = 1
 var trayIconMax = 3
-var trayIconName = 'mario'
+var trayIconName = "\res\icons\mario"
 var trayUpdateTimer = tools.createTimeInterval(winform, function(){
-	winform.tray.icon = "\res\icons\"+trayIconName+"\icon ("+trayIconIndex+").ico"
+	import console
+	console.dump(trayIconName+"\icon ("+trayIconIndex+").ico")
+	winform.tray.icon = trayIconName+"\icon ("+trayIconIndex+").ico"
 	trayIconIndex += 1
 	if (trayIconIndex > trayIconMax) {
 		trayIconIndex = 1
 	}
 }, 100, true)
 subscribe("trayIconChange",function(name){
-	trayIconName = name
 	import iconHelper
+	trayIconName = iconHelper.getPath(name)
 	trayIconMax = iconHelper.getCount(name)
 	trayIconIndex = 1
 })

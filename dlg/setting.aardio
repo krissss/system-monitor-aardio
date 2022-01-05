@@ -7,39 +7,6 @@ winform.add()
 import web.view;
 var wb = web.view(winform);
 
-var getIcons = function(){
-	var icons = {}
-		import fsys
-		fsys.enum(
-			"/res/icons",
-			"*.*",
-			function(dirname,filename,fullpath,findData){ 
-				if(!filename){ 
-           			table.push(icons, {
-						name: dirname,
-						//icon: fullpath + '/icon (1).ico',
-						path: fullpath,
-						count: 0
-					})
-				}
-			},
-			false
-		);
-		for(k,v in icons){
-			fsys.enum( 
-				v.path, 
-				"*.ico",
-				function(dirname,filename,fullpath,findData){ 
-					if(filename){ 
-	           			icons[k]['count'] += 1
-					}
-				},
-				false
-			);
-		}
-		return icons;
-}
-
 wb.export({
     alert = function(msg){
 		winform.msgbox(msg) 
@@ -53,6 +20,10 @@ wb.export({
 			icons: iconHelper.getCanUseNames()
 		}; 
 	}
+	refreshIcons = function(){
+		return iconHelper.getCanUseNames(); 
+	}
+	
 	saveSetting = function(form){
 		/*
 import console

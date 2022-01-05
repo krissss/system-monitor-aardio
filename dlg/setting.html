@@ -18,7 +18,7 @@
       <h1 class="pt-3">设置</h1>
       <form action="">
         <div class="row">
-          <label for="icon" class="col-sm-2 col-form-label">图标</label>
+          <label for="icon" class="col-sm-2 col-form-label">图标 <small @click="refreshIcons">刷新</small></label>
           <div class="col-sm-10" v-for="(icon, index) in icons">
             <div class="form-check">
               <input class="form-check-input" type="radio" v-model="form.icon" :id="'radio-' + icon" :value="icon">
@@ -47,7 +47,10 @@
           async save() {
             var result = await saveSetting(this.form)
             console.log(result)
-          }
+          },
+          async refreshIcons() {
+            this.icons = await refreshIcons()
+          },
         },
         async mounted() {
           const data = await init()

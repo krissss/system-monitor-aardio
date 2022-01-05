@@ -4,10 +4,10 @@
 	<folder name="资源文件" path="res" embed="true" local="false" ignored="false">
 		<file name="OpenHardwareMonitorLib.dll" path="res\OpenHardwareMonitorLib.dll" comment="res\OpenHardwareMonitorLib.dll"/>
 		<folder name="icons" path="res\icons" comment="res\icons">
-			<folder name="mario-ico" path="res\icons\mario-ico" comment="res\icons\mario-ico">
-				<file name="0.ico" path="res\icons\mario-ico\0.ico" comment="res\icons\mario-ico\0.ico"/>
-				<file name="1.ico" path="res\icons\mario-ico\1.ico" comment="res\icons\mario-ico\1.ico"/>
-				<file name="2.ico" path="res\icons\mario-ico\2.ico" comment="res\icons\mario-ico\2.ico"/>
+			<folder name="mario" path="res\icons\mario" comment="res\icons\mario">
+				<file name="icon (1).ico" path="res\icons\mario\icon (1).ico" comment="res\icons\mario\icon (1).ico"/>
+				<file name="icon (2).ico" path="res\icons\mario\icon (2).ico" comment="res\icons\mario\icon (2).ico"/>
+				<file name="icon (3).ico" path="res\icons\mario\icon (3).ico" comment="res\icons\mario\icon (3).ico"/>
 			</folder>
 		</folder>
 	</folder>
