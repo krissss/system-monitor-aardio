@@ -32,10 +32,10 @@ async function downloadAssets() {
     <el-form-item label="图标">
       <el-radio-group v-model="form.icon">
         <el-radio v-for="(icon, index) in icons" :key="index" :label="icon">
-          <el-avatar :size="20" src="https://empty" @error="errorHandler">
+          <div class="icon-radio">
             <img :src="`/assets/icons/${icon}/icon (1).ico`"/>
-          </el-avatar>
-          {{ icon }}
+            {{ icon }}
+          </div>
         </el-radio>
       </el-radio-group>
     </el-form-item>
@@ -61,5 +61,15 @@ async function downloadAssets() {
   font-size: 18px;
   border-left: 3px solid var(--el-color-primary);
   padding-left: 10px;
+}
+.icon-radio {
+  display: flex;
+  align-items: center;
+}
+.icon-radio img {
+  width: 20px;
+  height: 20px;
+  margin-right: 3px;
+  background-color: rgba(0,0,0,.3);
 }
 </style>

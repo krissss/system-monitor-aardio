@@ -14,7 +14,7 @@ yarn dev
 ```bash
 cd web.src
 yarn
-yarn build
+yarn build --emptyOutDir
 
 # 用 aadrio 打开 main.aardio
 # 然后发布

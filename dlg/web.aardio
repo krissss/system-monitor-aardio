@@ -1,15 +1,16 @@
 import win.ui;
 /*DSG{{*/
 var winform = win.form(text="aardio form";right=600;bottom=500)
-winform.add(
-static={cls="static";text="Home";left=193;top=33;right=317;bottom=52;align="center";center=1;notify=1;transparent=1;z=1}
-)
+winform.add()
 /*}}*/
 
 import web.view;
 var wb = web.view(winform);
 
 wb.external = {
+	isDebug = function(){
+		return _STUDIO_INVOKED; 
+	}
 	setting_getIcons = function(){
 		import iconHelper
 		return iconHelper.getCanUseNames(); 
@@ -40,14 +41,13 @@ wb.export({
 	}
 })
 
-var url = "dlg/web/index.html"
+var url
 if (_STUDIO_INVOKED) {
 	import web.rest.client;
-	var devUrl = "http://localhost:3000/web/"
-	url = devUrl
-	if (web.rest.client().api(devUrl).get() ) {
-		url = devUrl
-	}
+	url = "http://localhost:3000/web/"
+} else {
+	import wsock.tcp.simpleHttpServer
+	url = wsock.tcp.simpleHttpServer.startUrl("/web/index.html")
 }
 wb.go(url)
 
@@ -56,7 +56,6 @@ winform.wb = wb
 winform.wbGoTo = function(route) {
 	wb.go(url + "#" + route)
 }
-
 
 winform.show();
 win.loopMessage();

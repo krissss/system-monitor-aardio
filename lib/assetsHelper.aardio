@@ -1,5 +1,6 @@
 ﻿
 namespace assetsHelper{
+	// 下载资源到 /assets 目录下
 	download = function(winform){
 		import inet.downBox;
 		var downBox = inet.downBox(winform,"下载资源...",true )
