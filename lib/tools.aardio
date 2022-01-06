@@ -124,6 +124,7 @@ namespace tools{
 			if(lParam = 0x203/*_WM_LBUTTONDBLCLK)*/){
 				win.setForeground(winform.hwnd)
                 winform.show(!win.isVisible(winform.hwnd));
+                ..publish("trayOpenWinForm")
             }
 		})
 		

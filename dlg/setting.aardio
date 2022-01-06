@@ -80,7 +80,39 @@ import console
 	}
 })
 
-wb.html = string.load("\dlg\setting.html")
+import wsock.tcp.asynHttpServer;
+var httpServer = wsock.tcp.asynHttpServer();
+httpServer.run(function(response,request,session){
+	import string
+	import io
+	import fsys.mime
+	if (string.startWith(request.path, '/web/')) {
+		var path = "/dlg/" + request.path
+		if (io.exist(path)) {
+			response.contentType = fsys.mime.fromFile(path);
+			response.write(string.load(path));
+			return;
+		}
+		response.status = 404;
+		return;
+	}
+	if (string.startWith(request.path, '/assets/')) {
+		var path = request.path
+		if (io.exist(path)) {
+			response.contentType = fsys.mime.fromFile(path);
+			response.write(string.load(path));
+			return; 
+		}
+		response.status = 404;
+		return;
+	}
+})
+if (_STUDIO_INVOKED) {
+	wb.go(httpServer.getUrl(""))
+} else {
+	wb.go( httpServer.getUrl("/web/index.html") )
+}
+//wb.html = string.load("\dlg\setting.html")
 
 winform.show();
 win.loopMessage();

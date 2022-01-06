@@ -20,29 +20,28 @@ if (config.__single && !tools.singleInstance(winform)) {
 // 2.设置页面（设置指标，设置图标）
 // 3.图标根据 icos 自动切换和配置
 
-winform.custom.loadForm("\dlg\home.aardio")
 // 创建菜单
-var pageHome = null
+var webForm = null
 var pageSetting = null
+function loadWebForm() {
+	if (!webForm) {
+		webForm = winform.custom.loadForm("\dlg\web.aardio")
+	}
+	return webForm;
+}
 var menuTable = {
 	{
 		"信息";
 		function(id){
 			winform.show()
-			if (!pageHome) {
-				pageHome = winform.custom.loadForm("\dlg\home.aardio")
-			}
-			pageHome.show()
+			loadWebForm().wbGoTo('/')
 		}
 	};
 	{
 		"设置";
 		function(id){
 			winform.show()
-			if (!pageSetting) {
-				pageSetting = winform.custom.loadForm("\dlg\setting.aardio")
-			}
-			pageSetting.show()
+			loadWebForm().wbGoTo('/setting')
 		}
 	};
 	{ "退出"; function() { winform.onClose=null; winform.close() } };
@@ -53,6 +52,9 @@ winform.popmenu = tools.createPopMenu(winform, menuTable, 'popmenu')
 winform.mainmenu = tools.createMainMenu(winform, menuTable)
 // 创建托盘
 winform.tray = tools.createTray(winform, "\res\icons\mario\icon (1).ico", "Running")
+subscribe("trayOpenWinForm", function(){
+	loadWebForm().wbGoTo('/')
+})
 
 // 托盘更新的定时器
 var trayIconIndex = 1
@@ -84,5 +86,5 @@ var systemMonitorTimer = tools.createTimeInterval(winform, function(){
 // 注册窗口事件监听
 tools.winformEventHandle(winform)
 // 窗口启动
-winform.show(true);
+winform.show(false);
 return win.loopMessage();
