@@ -11,6 +11,14 @@ wb.external = {
 	isDebug = function(){
 		return _STUDIO_INVOKED; 
 	}
+	setting_init = function(){
+		import wsock.tcp.simpleHttpServer
+		import iconHelper
+		return web.json.stringify({
+			assetsUrl: wsock.tcp.simpleHttpServer.startUrl(,"/assets/"),
+			icons: iconHelper.getCanUseNames()
+		});
+	}
 	setting_getIcons = function(){
 		import iconHelper
 		return iconHelper.getCanUseNames(); 

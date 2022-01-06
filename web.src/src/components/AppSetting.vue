@@ -5,8 +5,12 @@ const form = reactive({
   icon: ''
 })
 const icons = ref([])
+const assetsUrl = ref('')
 onMounted(async () => {
-  icons.value = await aardio.setting_getIcons()
+  const data = JSON.parse(await aardio.setting_init())
+
+  icons.value = data.icons
+  assetsUrl.value = data.assetsUrl
 })
 
 async function saveSetting() {
@@ -18,7 +22,7 @@ async function saveSetting() {
 }
 
 async function downloadAssets() {
-  await aardio.setting_downloadAssets()
+  icons.value = await aardio.setting_downloadAssets()
 }
 </script>
 
@@ -33,7 +37,7 @@ async function downloadAssets() {
       <el-radio-group v-model="form.icon">
         <el-radio v-for="(icon, index) in icons" :key="index" :label="icon">
           <div class="icon-radio">
-            <img :src="`/assets/icons/${icon}/icon (1).ico`"/>
+            <img :src="`${assetsUrl}/icons/${icon}/icon (1).ico`"/>
             {{ icon }}
           </div>
         </el-radio>
